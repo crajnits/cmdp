@@ -24,14 +24,13 @@ int main(int argc, char* argv[])
     // input: --filename test.jpg --ratio 15.6
 
     // init and parse input args
-    cmdp::CmdParser parser;
-    parser.parse(argc, argv);
+    cmdp::CmdParser parser(argc, argv);
 
     // read required parameters (availabe in args)
     std::string filename = parser.get<std::string>("--filename");       // test.jpg
 
     // read optional parameters with default values (available in args)
-    float expRatio = parser.get<float>("--ratio", 100.56);              // 15.6
+    float expRatio = parser.get<float>("--ratio", 100.56F);             // 15.6
 
     // read optional parameters with default values (missing in args)
     int enable = parser.get<int>("--enable", 10);                       // 10
@@ -40,8 +39,8 @@ int main(int argc, char* argv[])
     int value = parser.get<int>("--value");                             // 0 and set error flag
 
     // check if any required paramters are missing.
-    if (parser.printInput()) {                                          // print all params with status
-        std::cout << "Input args are missing" << std::endl;
+    if (parser.printStatus()) {                                          // print all params with status
+        std::cout << "Invalid Input args" << std::endl;
         return 0;
     }
 

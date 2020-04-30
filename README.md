@@ -7,17 +7,16 @@ Options can be given as tag value pair
 
     --tag value
 
-## Basics
+## Uses
 
 ```cpp
 #include "cmdp.h"
 ```
 
-Create a `cmdp::CmdParser` instance and pass the input args.
+Create a `cmdp::CmdParser` instance.
 
 ```cpp
-cmdp::CmdParser parser;
-parser.parse(argc, argv);
+cmdp::CmdParser parser(argc, argv);
 ```
 
 Then read the required or optional parameters.
@@ -27,8 +26,8 @@ Then read the required or optional parameters.
 std::string filename = parser.get<std::string>("--filename");
 ```
 ```cpp
-// read optional parameters (with default values)
-float expRatio = parser.get<float>("--ratio", 100.56);
+// read optional parameters (just pass the default values)
+float expRatio = parser.get<float>("--ratio", 100.56F);
 ```
 
 ## Example
@@ -40,14 +39,13 @@ int main(int argc, char* argv[])
     // input: --filename test.jpg --ratio 15.6
 
     // init and parse input args
-    cmdp::CmdParser parser;
-    parser.parse(argc, argv);
+    cmdp::CmdParser parser(argc, argv);
 
     // read required parameters (availabe in args)
     std::string filename = parser.get<std::string>("--filename");       // test.jpg
 
     // read optional parameters with default values (available in args)
-    float expRatio = parser.get<float>("--ratio", 100.56);              // 15.6
+    float expRatio = parser.get<float>("--ratio", 100.56F);             // 15.6
 
     // read optional parameters with default values (missing in args)
     int enable = parser.get<int>("--enable", 10);                       // 10
@@ -56,8 +54,8 @@ int main(int argc, char* argv[])
     int value = parser.get<int>("--value");                             // 0 and set error flag
 
     // check if any required paramters are missing.
-    if (parser.printInput()) {                                          // print all params with status
-        std::cout << "Input args are missing" << std::endl;
+    if (parser.printStatus()) {                                          // print all params with status
+        std::cout << "Invalid Input args" << std::endl;
         return 0;
     }
     //...
@@ -66,7 +64,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-Output Result `parser.printInput()`:
+Output Result `parser.printStatus()`:
 ```
 [Type  ]   Tag           Value           Status
 [string] --filename      test.jpg
@@ -74,7 +72,7 @@ Output Result `parser.printInput()`:
 [int   ] --enable        10              Default
 [int   ] --value         0               Missing
 
-Input args are missing
+Invalid Input args
 ```
 
 ## Linking

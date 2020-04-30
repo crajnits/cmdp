@@ -58,20 +58,11 @@ class CmdParser
 {
 public:
     //---------------------------------------------------------------------------
-    //! \breif  default ctor.
-    CmdParser()
-        : error_(false)
-    { }
-
-    //---------------------------------------------------------------------------
-    //! \breif  parse tag, value pair from command line args
-    //!
-    //! \return Nothing
-    void parse(
+    //! \breif  default ctor. parse args into the map.
+    CmdParser(
         int argc,       //!< [in]: number of args
         char* argv[]    //!< [in]: args
     ) {
-        data_.clear();
         error_ = false;
         for (int i = 1; i < argc - 1; i += 2) {
             data_[argv[i]] = argv[i + 1];
@@ -109,7 +100,7 @@ public:
     //! \breif  print all params, must be called after reading all args.
     //!
     //! \return error state
-    bool printInput() const {
+    bool printStatus() const {
         printf("[%-6s] %-15s %-15s %s\n", "Type", "  Tag", "Value", "Status");
         for (int i = 0; i < tags_.size(); i++) {
             printf("[%-6s] %-15s %-15s %s\n", types_[i].c_str(),
@@ -152,11 +143,17 @@ private:
             return def;
         }
         values_.push_back(it->second);
-        status_.push_back("");
         // string to type conversion
         std::istringstream ss(it->second);
         T value;
         ss >> value;
+        if (ss.fail()) {
+            error_ = true;
+            status_.push_back("Invalid");
+        }
+        else {
+            status_.push_back("");
+        }
         return value;
     }
 
