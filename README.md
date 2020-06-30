@@ -10,7 +10,7 @@ Options can be given as tag value pair
 ## Uses
 
 ```cpp
-#include "cmdp.h"
+#include <cmdp/cmdp.h>
 ```
 
 Create a `cmdp::CmdParser` instance.
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     std::string filename = parser.get<std::string>("--filename");       // test.jpg
 
     // read optional parameters with default values (available in args)
-    float expRatio = parser.get<float>("--ratio", 100.56F);             // 15.6
+    float ratio = parser.get<float>("--ratio", 100.56F);                // 15.6
 
     // read optional parameters with default values (missing in args)
     int enable = parser.get<int>("--enable", 10);                       // 10
