@@ -1,11 +1,16 @@
 # cmdp
-`Simple C++ command line arguments parser` 
+`Simple C++ command line arguments parser`
 
-This is a simple C++ command line arguments parser library
+This is a simple, header only C++ command line arguments parser library.
 
-Options can be given as tag value pair
+Options can be given as a tag value pair, in either form:
 
     --tag value
+    --tag=value
+
+A token is treated as a tag when it starts with `-` and is not a number, so
+negative values such as `--offset -5` work as expected. A tag given without a
+value (`--verbose`) is recorded as a flag.
 
 ## Uses
 
@@ -29,6 +34,26 @@ std::string filename = parser.get<std::string>("--filename");
 // read optional parameters (just pass the default values)
 float expRatio = parser.get<float>("--ratio", 100.56F);
 ```
+
+The error flag is set when a required tag is missing, or when a value cannot be
+converted to the requested type. A value that only partly converts, such as
+`--count 12abc`, is rejected rather than silently read as `12`. Check the flag
+with `getStatus()`, or with `printStatus()` which also prints a summary.
+
+### API
+
+| Member | Description |
+| --- | --- |
+| `get<T>(tag)` | required parameter, sets the error flag if missing |
+| `get<T>(tag, def)` | optional parameter, `def` is used if missing |
+| `has(tag)` | true if the tag was given on the command line |
+| `size()` | number of tags given on the command line |
+| `printStatus(os = std::cout)` | print every queried parameter, returns the error state |
+| `getStatus()` | returns the error state |
+
+`bool` values accept `1/0`, `true/false`, `yes/no` and `on/off`, case
+insensitively. A valueless tag reads as `true`. Any other type works as long as
+it is default constructible and supports `operator>>`.
 
 ## Example
 
@@ -77,11 +102,28 @@ Invalid Input args
 
 ## Linking
 
-This is a header only library.
+This is a header only library. Add the repository root to your include path, or
+use CMake:
+
+```cmake
+add_subdirectory(cmdp)
+target_link_libraries(my_app PRIVATE cmdp::cmdp)
+```
+
+## Building the tests
+
+```sh
+./test/build.bash          # configure, build and run the tests
+```
+
+or directly with CMake:
+
+```sh
+cmake -S . -B build
+cmake --build build
+cd build && ctest --output-on-failure
+```
 
 ## Requirements
 
-The only build requirement is a C++ compiler that supports C++11 features such as:
-
-* typeid
-* default constructors
+The only build requirement is a C++ compiler that supports C++11.

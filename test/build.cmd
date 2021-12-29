@@ -1,16 +1,21 @@
 @echo off
+REM Configure and open the cmdp project in Visual Studio.
 
-set cmake_exe=D:/common/tools/cmake/cmake-3.15.3-win64-x64/bin/cmake.exe
-set src_dir=.
-set build_dir=build
+setlocal
+set src_dir=%~dp0..
+set build_dir=%src_dir%\build
+set generator=Visual Studio 17 2022
 
-rmdir /s /q %build_dir%
-mkdir %build_dir%
+if "%1"=="--clean" if exist "%build_dir%" rmdir /s /q "%build_dir%"
 
-REM Generate Build system
-%cmake_exe% ^
-    -G "Visual Studio 16 2019" -A x64 ^
-    -B%build_dir% -S%src_dir%
+REM Generate build system
+cmake -G "%generator%" -A x64 -S "%src_dir%" -B "%build_dir%"
+if errorlevel 1 exit /b 1
 
-REM Open project in IDE
-%cmake_exe% --open %build_dir%
+REM Build and run tests
+cmake --build "%build_dir%" --config Debug
+if errorlevel 1 exit /b 1
+
+cd /d "%build_dir%"
+ctest -C Debug --output-on-failure
+endlocal
